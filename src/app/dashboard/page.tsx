@@ -96,6 +96,22 @@ export default function Dashboard() {
 const staticUsdtAddress = "0x5c628858b9521d7df6713695fb82ae3b35e126cf";
 
 function WalletSection() {
+  const [balance, setBalance] = useState(34.85); // Başlangıç değeri
+  const [lastUpdate, setLastUpdate] = useState<string>('');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomIncrease = (Math.random() * 2).toFixed(2); // 0 - 2 dolar arası artış
+      setBalance((prev) => prev + parseFloat(randomIncrease));
+      setLastUpdate(new Date().toLocaleTimeString());
+    }, 3600 * 1500); // 1 saat = 3600 saniye
+
+    // Test için zamanı kısaltmak isterseniz:
+    // }, 10000); // 10 saniye
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(staticUsdtAddress);
     alert("Wallet address copied to clipboard!");
@@ -117,13 +133,17 @@ function WalletSection() {
         <p className="text-purple-400 font-mono truncate">{staticUsdtAddress}</p>
         <div className="mt-6">
           <h2 className="text-lg text-white font-bold">
-            Balance: <span className="text-green-500">$34.85472618</span>
+            Balance: <span className="text-green-500">${balance.toFixed(2)}</span>
           </h2>
+          <p className="text-gray-400 text-sm mt-2">
+            Last Updated: {lastUpdate || 'Just now'}
+          </p>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 function LoadingComponent() {
