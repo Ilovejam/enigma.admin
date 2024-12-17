@@ -104,7 +104,7 @@ function WalletSection() {
       const randomIncrease = (Math.random() * 2).toFixed(2); // 0 - 2 dolar arası artış
       setBalance((prev) => prev + parseFloat(randomIncrease));
       setLastUpdate(new Date().toLocaleTimeString());
-    }, 3600 * 1500); // 1 saat = 3600 saniye
+    }, 3600 * 500); // 1 saat = 3600 saniye
 
     // Test için zamanı kısaltmak isterseniz:
     // }, 10000); // 10 saniye
