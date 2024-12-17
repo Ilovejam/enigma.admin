@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaCopy } from 'react-icons/fa';
+type WalletData = {
+  walletAddress: string;
+  balance: string;
+  asset: string;
+};
 
 export default function Dashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('wallet');
   const [username, setUsername] = useState('');
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const isAuth = document.cookie.includes('auth=true');
@@ -94,7 +98,7 @@ function WalletSection() {
       try {
         const response = await fetch('https://nox-admin-backend.vercel.app/api/usdt-info');
         if (!response.ok) throw new Error('Failed to fetch wallet info');
-        const data: WalletData = await response.json(); // JSON verisini WalletData tipine bağla
+        const data: WalletData = await response.json(); 
         setWalletData(data);
       } catch (err) {
         if (err instanceof Error) {
@@ -152,7 +156,7 @@ function LoadingComponent() {
   );
 }
 
-function ErrorComponent({ error }) {
+function ErrorComponent({ error }: { error: string }) {
   return (
     <div className="flex items-center justify-center h-full">
       <h1 className="text-4xl font-bold mb-4 text-red-500">Error</h1>
@@ -160,6 +164,9 @@ function ErrorComponent({ error }) {
     </div>
   );
 }
+
+ 
+ 
 
 function CryptoGraphic() {
   const [coins, setCoins] = useState([]);
@@ -172,10 +179,10 @@ function CryptoGraphic() {
       .catch((error) => console.error('Error fetching coins:', error));
   }, []);
 
-  const filteredCoins = coins.filter((coin) =>
+  const filteredCoins = coins.filter((coin: any) =>
     coin.name.toLowerCase().includes(search.toLowerCase())
   );
-
+  
   return (
     <div className="flex flex-col w-full">
       <h1 className="text-4xl font-bold mb-6 text-center">Crypto Prices</h1>
