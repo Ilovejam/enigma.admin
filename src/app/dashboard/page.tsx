@@ -1,17 +1,25 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaCopy } from 'react-icons/fa';
-type WalletData = {
+
+interface WalletData {
   walletAddress: string;
   balance: string;
   asset: string;
-};
+}
+
+interface Coin {
+  id: string;
+  name: string;
+  image: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+}
 
 export default function Dashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('wallet');
+  const [activeTab, setActiveTab] = useState<'wallet' | 'graphic'>('wallet');
   const [username, setUsername] = useState('');
 
   useEffect(() => {
@@ -34,7 +42,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
-      {/* Sidebar */}
       <aside className="w-64 bg-gray-800 bg-opacity-90 p-6 border-r border-gray-700 flex flex-col justify-between min-h-screen">
         <div>
           <div className="mb-8 text-center">
@@ -69,7 +76,6 @@ export default function Dashboard() {
           </nav>
         </div>
 
-        {/* Logout Butonu */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 transition-all text-white font-semibold rounded-lg"
@@ -79,7 +85,6 @@ export default function Dashboard() {
         </button>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-8 min-h-screen">
         {activeTab === 'wallet' && <WalletSection />}
         {activeTab === 'graphic' && <CryptoGraphic />}
@@ -88,39 +93,12 @@ export default function Dashboard() {
   );
 }
 
+const staticUsdtAddress = "0x5c628858b9521d7df6713695fb82ae3b35e126cf";
+
 function WalletSection() {
-  const [walletData, setWalletData] = useState<WalletData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchWalletData = async () => {
-      try {
-        const response = await fetch('https://nox-admin-backend.vercel.app/api/usdt-info');
-        if (!response.ok) throw new Error('Failed to fetch wallet info');
-        const data: WalletData = await response.json(); 
-        setWalletData(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWalletData();
-  }, []);
-
-  if (loading) return <LoadingComponent />;
-  if (error) return <ErrorComponent error={error} />;
-
   const handleCopy = () => {
-    if (walletData?.walletAddress) {
-      navigator.clipboard.writeText(walletData.walletAddress);
-      alert('Wallet address copied to clipboard!');
-    }
+    navigator.clipboard.writeText(staticUsdtAddress);
+    alert("Wallet address copied to clipboard!");
   };
 
   return (
@@ -136,7 +114,7 @@ function WalletSection() {
             <FaCopy />
           </button>
         </div>
-        <p className="text-purple-400 font-mono truncate">{walletData?.walletAddress}</p>
+        <p className="text-purple-400 font-mono truncate">{staticUsdtAddress}</p>
         <div className="mt-6">
           <h2 className="text-lg text-white font-bold">
             Balance: <span className="text-green-500">$4899</span>
@@ -165,24 +143,24 @@ function ErrorComponent({ error }: { error: string }) {
   );
 }
 
- 
- 
-
 function CryptoGraphic() {
-  const [coins, setCoins] = useState([]);
+  const [coins, setCoins] = useState<Coin[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc')
-      .then((response) => response.json())
-      .then((data) => setCoins(data))
-      .catch((error) => console.error('Error fetching coins:', error));
+    if (typeof window !== 'undefined') {
+      fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc')
+        .then((response) => response.json())
+        .then((data: Coin[]) => setCoins(data))
+        .catch((error) => console.error('Error fetching coins:', error));
+    }
   }, []);
+  
 
-  const filteredCoins = coins.filter((coin: any) =>
+  const filteredCoins = coins.filter((coin) =>
     coin.name.toLowerCase().includes(search.toLowerCase())
   );
-  
+
   return (
     <div className="flex flex-col w-full">
       <h1 className="text-4xl font-bold mb-6 text-center">Crypto Prices</h1>
