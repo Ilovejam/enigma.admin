@@ -117,7 +117,7 @@ function WalletSection() {
         <p className="text-purple-400 font-mono truncate">{staticUsdtAddress}</p>
         <div className="mt-6">
           <h2 className="text-lg text-white font-bold">
-            Balance: <span className="text-green-500">$4899</span>
+            Balance: <span className="text-green-500">$0</span>
           </h2>
         </div>
       </div>
