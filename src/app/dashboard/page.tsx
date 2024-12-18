@@ -96,7 +96,7 @@ export default function Dashboard() {
 const staticUsdtAddress = "0x5c628858b9521d7df6713695fb82ae3b35e126cf";
 
 function WalletSection() {
-  const [balance, setBalance] = useState(39.41); // Başlangıç değeri
+  const [balance, setBalance] = useState(40.19); // Başlangıç değeri
   const [lastUpdate, setLastUpdate] = useState<string>('');
 
   useEffect(() => {
