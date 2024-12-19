@@ -2,19 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 
 const users = [
   { username: 'admin1', password: 'fb82ae3b35e126cf' },
   { username: 'mehmetabi', password: 'Mehmetabi123.' },
   { username: 'özlemabla', password: 'Özlemabla123.' },
 ];
-
-const authenticateUser = (username: string, password: string): boolean => {
-  return users.some(
-    (user) => user.username === username && user.password === password
-  );
-};
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -23,18 +16,17 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = () => {
-    if (authenticateUser(username, password)) {
-      // Cookies'e kullanıcı bilgilerini kaydet
-      Cookies.set('username', username);
-      Cookies.set('password', password);
+    const user = users.find(
+      (u) => u.username === username && u.password === password
+    );
 
-      // Dashboard'a yönlendir
-      router.push('/dashboard');
+    if (user) {
+      // Kullanıcı bilgilerini URL query üzerinden dashboard'a ilet
+      router.push(`/dashboard?username=${user.username}&password=${user.password}`);
     } else {
       setErrorMessage('Invalid username or password');
     }
   };
-
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-purple-900 to-black text-white">

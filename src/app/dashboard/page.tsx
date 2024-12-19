@@ -1,24 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaCopy, FaMoneyBillWaveAlt } from 'react-icons/fa';
 import Image from 'next/image';
-import Cookies from 'js-cookie';
-
-const users = [
-  { username: 'admin1', password: 'fb82ae3b35e126cf' },
-  { username: 'mehmetabi', password: 'Mehmetabi123.' },
-  { username: 'özlemabla', password: 'Özlemabla123.' },
-];
-
-const authenticateUser = (username: string, password: string): boolean => {
-  return users.some(
-    (user) => user.username === username && user.password === password
-  );
-};
-
-
 
 interface WalletData {
   walletAddress: string;
@@ -33,49 +18,38 @@ interface Coin {
   current_price: number;
   price_change_percentage_24h: number;
 }
+
 interface Trade {
   image: string;
   coin: string;
   current_balance: string;
-  [key: string]: any; // Diğer alanları da kabul eder
+  [key: string]: any;
 }
 
-
 export default function Dashboard() {
+  const [username, setUsername] = useState('');
+const [password, setPassword] = useState('');
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  setUsername(params.get('username') || '');
+  setPassword(params.get('password') || '');
+}, []);
+
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'wallet' | 'graphic' | 'trades'>('wallet');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  useEffect(() => {
-    // Cookies'ten kullanıcı bilgilerini oku
-    const savedUsername = Cookies.get('username');
-    const savedPassword = Cookies.get('password');
-
-    // Kullanıcı doğrulaması yap
-    if (!savedUsername || !savedPassword) {
-      router.push('/login'); // Kullanıcı yoksa login sayfasına yönlendir
-    } else {
-      setUsername(savedUsername); // Kullanıcı adını state'e yaz
-    }
-  }, [router]);
-
 
   const handleLogout = () => {
-    // Cookies'i temizle ve login sayfasına yönlendir
-    Cookies.remove('username');
-    Cookies.remove('password');
     router.push('/login');
   };
 
-  
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       <aside className="w-64 bg-gray-800 bg-opacity-90 p-6 border-r border-gray-700 flex flex-col justify-between min-h-screen">
         <div>
           <div className="mb-8 text-center">
-          <div className="bg-purple-600 text-white text-sm font-bold rounded-full px-4 py-2">
-                {username} {/* Kullanıcı adı */}
+            <div className="bg-purple-600 text-white text-sm font-bold rounded-full px-4 py-2">
+              {username}
             </div>
           </div>
 
@@ -126,44 +100,33 @@ export default function Dashboard() {
       </aside>
 
       <main className="flex-1 p-8 min-h-screen">
-        {activeTab === 'wallet' && <WalletSection />}
+        {activeTab === 'wallet' && <WalletSection username={username} password={password} />}
         {activeTab === 'graphic' && <CryptoGraphic />}
-        {activeTab === 'trades' && <Trades />}
-
+        {activeTab === 'trades' && <Trades username={username} password={password} />}
       </main>
     </div>
   );
 }
 
-const staticUsdtAddress = "0x96F7E183cacD630cfD3B85e91d01A8745D8669AA";
-
-function WalletSection() {
+function WalletSection({ username, password }: { username: string; password: string }) {
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        // localStorage'dan username ve password değerlerini al
-        const savedUsername = Cookies.get('username');
-const savedPassword = Cookies.get('password');
-
-  
-        // Eğer username veya password yoksa, işlemi durdur
-        if (!savedUsername || !savedPassword) {
+        if (!username || !password) {
           console.error('Kullanıcı adı veya şifre bulunamadı!');
           return;
         }
-  
-        // API çağrısı yap
+
         const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: savedUsername, password: savedPassword }),
+          body: JSON.stringify({ username, password }),
         });
-  
+
         const data = await response.json();
-  
-        // Başarılı sonuç aldıysanız balance state'ini güncelle
+
         if (data.success) {
           setBalance(data.balance);
         } else {
@@ -173,32 +136,22 @@ const savedPassword = Cookies.get('password');
         console.error('Error fetching balance:', error);
       }
     };
-  
+
     fetchBalance();
-  }, []);
-  
+  }, [username, password]);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(staticUsdtAddress);
+    navigator.clipboard.writeText("0x96F7E183cacD630cfD3B85e91d01A8745D8669AA");
     alert('Wallet address copied to clipboard!');
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-6">
-        Cüzdan - Bakiye <span className="text-yellow-200">ERC 20</span>
-      </h1>
-      <p className="text-xl font-bold mb-6">
-        Transfer Kesintisi <span className="text-yellow-200">%1-%3</span>
-      </p>
-      <p className="text-xl font-bold mb-6">
-         <span className="text-yellow-200">Bakiye güncellenmesi proxy sebebi ile gecikmelidir</span>
-      </p>
+      <h1 className="text-4xl font-bold mb-6">Cüzdan - Bakiye</h1>
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center w-96">
-        <div className="mt-6">
-          <h2 className="text-lg text-white font-bold">
-            Bakiye: <span className="text-green-500">${balance.toFixed(2)}</span>
-          </h2>
-        </div>
+        <h2 className="text-lg text-white font-bold">
+          Bakiye: <span className="text-green-500">${balance.toFixed(2)}</span>
+        </h2>
         <div className="flex items-center justify-between mt-4">
           <p className="text-gray-400 text-sm">Wallet Address:</p>
           <button
@@ -208,34 +161,31 @@ const savedPassword = Cookies.get('password');
             Kopyala
           </button>
         </div>
-        <p className="text-purple-400 font-mono truncate mt-2">{staticUsdtAddress}</p>
+        <p className="text-purple-400 font-mono truncate mt-2">0x96F7E183cacD630cfD3B85e91d01A8745D8669AA</p>
       </div>
     </div>
   );
 }
-
- 
-
-
- 
 
 function CryptoGraphic() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc')
-        .then((response) => response.json())
-        .then((data: Coin[]) => setCoins(data))
-        .catch((error) => console.error('Error fetching coins:', error));
-    }
+    const fetchCoins = async () => {
+      try {
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc'
+        );
+        const data = await response.json();
+        setCoins(data);
+      } catch (error) {
+        console.error('Error fetching coins:', error);
+      }
+    };
+
+    fetchCoins();
   }, []);
-  const [trades, setTrades] = useState<Trade[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  
-
 
   const filteredCoins = coins.filter((coin) =>
     coin.name.toLowerCase().includes(search.toLowerCase())
@@ -280,88 +230,43 @@ function CryptoGraphic() {
           </tbody>
         </table>
       </div>
-
-       <div className="flex flex-col gap-4">
-       {trades.length > 0 ? (
-  trades.map((trade: Trade, index: number) => {
-    const previousBalance = index > 0 ? parseFloat((trades[index - 1] as Trade).current_balance) : 0;
-    const currentBalance = parseFloat(trade.current_balance);
-    const profit = (currentBalance - previousBalance).toFixed(2);
-
-    return (
-      <div
-        key={index}
-        className="bg-gray-800 rounded-lg shadow-md p-6 flex flex-col md:flex-row items-center border border-gray-700"
-      >
-        <Image
-          src={trade.image}
-          alt={trade.coin}
-          width={50} // Genişlik
-          height={50} // Yükseklik
-          className="rounded-full"
-        />
-        <div className="ml-4 flex-1">
-          <h2 className="text-lg font-bold text-white">
-            {trade.coin} ({trade.symbol})
-          </h2>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <p className="text-sm text-green-500">
-              <span className="font-bold">Alış Fiyatı:</span> ${trade.alış_fiyatı}
-            </p>
-            <p className="text-sm text-red-500">
-              <span className="font-bold">Satış Fiyatı:</span> ${trade.satış_fiyatı}
-            </p>
-            <p className="text-sm text-yellow-500 col-span-2">
-              <span className="font-bold">Bakiye:</span> ${trade.current_balance}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  })
-) : (
-  <p className="text-center text-gray-400">Trade bulunamadı.</p>
-)}
-
-      </div>
-
     </div>
   );
 }
 
-function Trades() {
-  const [trades, setTrades] = useState([]);
+function Trades({ username, password }: { username: string; password: string }) {
+  const [trades, setTrades] = useState<Trade[]>([]);
 
-  const fetchTrades = async () => {
-    try {
-      const savedUsername = Cookies.get('username');
-const savedPassword = Cookies.get('password');
-
-  
-      if (!savedUsername || !savedPassword) {
-        console.error('Kullanıcı adı veya şifre bulunamadı!');
-        return;
-      }
-  
-      const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: savedUsername, password: savedPassword }),
-      });
-  
-      const data = await response.json();
-      if (data.success) {
-        setTrades(data.tradelist); // İşlem geçmişini state'e aktar
-      }
-    } catch (error) {
-      console.error('Error fetching trades:', error);
-    }
-  };
-
-  // `useEffect` ile bileşen yüklendiğinde işlemleri getir
   useEffect(() => {
+    const fetchTrades = async () => {
+      try {
+        if (!username || !password) {
+          console.error('Kullanıcı adı veya şifre bulunamadı!');
+          return;
+        }
+
+        const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setTrades(data.tradelist);
+        } else {
+          console.error('API hatası:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching trades:', error);
+      }
+    };
+
     fetchTrades();
-  }, []);
+  }, [username, password]);
+
+
 
   return (
     <div className="flex flex-col p-4">
