@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaCopy, FaMoneyBillWaveAlt } from 'react-icons/fa';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
 
 const users = [
   { username: 'admin1', password: 'fb82ae3b35e126cf' },
@@ -47,24 +48,26 @@ export default function Dashboard() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    // Kullanıcı bilgilerini sessionStorage'dan al
-    const savedUsername = sessionStorage.getItem('username');
-    const savedPassword = sessionStorage.getItem('password');
+    // Cookies'ten kullanıcı bilgilerini oku
+    const savedUsername = Cookies.get('username');
+    const savedPassword = Cookies.get('password');
 
-    // Doğrulama kontrolü
-    if (!savedUsername || !savedPassword || !authenticateUser(savedUsername, savedPassword)) {
-      router.push('/login'); // Giriş yapılmamışsa login'e yönlendir
+    // Kullanıcı doğrulaması yap
+    if (!savedUsername || !savedPassword) {
+      router.push('/login'); // Kullanıcı yoksa login sayfasına yönlendir
     } else {
-      setUsername(savedUsername);
-      setPassword(savedPassword);
+      setUsername(savedUsername); // Kullanıcı adını state'e yaz
     }
   }, [router]);
 
+
   const handleLogout = () => {
-    sessionStorage.removeItem('username');
-    sessionStorage.removeItem('password');
+    // Cookies'i temizle ve login sayfasına yönlendir
+    Cookies.remove('username');
+    Cookies.remove('password');
     router.push('/login');
   };
+
   
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
@@ -141,8 +144,8 @@ function WalletSection() {
     const fetchBalance = async () => {
       try {
         // localStorage'dan username ve password değerlerini al
-        const savedUsername = sessionStorage.getItem('username');
-      const savedPassword = sessionStorage.getItem('password');
+        const savedUsername = Cookies.get('username');
+const savedPassword = Cookies.get('password');
 
   
         // Eğer username veya password yoksa, işlemi durdur
@@ -331,8 +334,8 @@ function Trades() {
 
   const fetchTrades = async () => {
     try {
-      const savedUsername = sessionStorage.getItem('username');
-      const savedPassword = sessionStorage.getItem('password');
+      const savedUsername = Cookies.get('username');
+const savedPassword = Cookies.get('password');
 
   
       if (!savedUsername || !savedPassword) {

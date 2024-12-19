@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const users = [
   { username: 'admin1', password: 'fb82ae3b35e126cf' },
@@ -23,14 +24,17 @@ export default function Login() {
 
   const handleLogin = () => {
     if (authenticateUser(username, password)) {
-      // Kullanıcı bilgilerini sessionStorage'a kaydet
-      sessionStorage.setItem('username', username);
-      sessionStorage.setItem('password', password);
+      // Cookies'e kullanıcı bilgilerini kaydet
+      Cookies.set('username', username);
+      Cookies.set('password', password);
+
+      // Dashboard'a yönlendir
       router.push('/dashboard');
     } else {
       setErrorMessage('Invalid username or password');
     }
   };
+
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-purple-900 to-black text-white">
