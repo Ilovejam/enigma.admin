@@ -13,7 +13,7 @@ export default function Dashboard() {
     const storedPassword = sessionStorage.getItem('password');
 
     if (!storedUsername || !storedPassword) {
-      router.push('/login'); // Eğer bilgiler yoksa login sayfasına yönlendir
+      router.push('/login'); // Eğer kullanıcı bilgileri yoksa login sayfasına yönlendir
     } else {
       setUsername(storedUsername);
       setPassword(storedPassword);
@@ -27,7 +27,7 @@ export default function Dashboard() {
       <p>Password: {password}</p>
       <button
         onClick={() => {
-          sessionStorage.clear(); // Çıkış yapıldığında bilgileri temizle
+          sessionStorage.clear(); // Çıkış yapıldığında verileri temizle
           router.push('/login');
         }}
       >

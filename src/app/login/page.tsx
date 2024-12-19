@@ -19,15 +19,10 @@ export default function Login() {
     const user = users.find((u) => u.username === username && u.password === password);
 
     if (user) {
-      // Giriş başarılıysa, username ve password'ü sessionStorage'a kaydediyoruz
-      try {
-        sessionStorage.setItem('username', username);
-        sessionStorage.setItem('password', password);
-        router.push('/dashboard'); // Dashboard'a yönlendir
-      } catch (e) {
-        console.error("sessionStorage erişim hatası:", e);
-        setErrorMessage('Failed to save data. Try again!');
-      }
+      // Giriş başarılıysa verileri sessionStorage'a kaydediyoruz
+      sessionStorage.setItem('username', username);
+      sessionStorage.setItem('password', password);
+      router.push('/dashboard'); // Dashboard sayfasına yönlendir
     } else {
       setErrorMessage('Invalid username or password!');
     }
@@ -48,7 +43,7 @@ export default function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <button onClick={handleLogin}>Login</button>
     </div>
   );
