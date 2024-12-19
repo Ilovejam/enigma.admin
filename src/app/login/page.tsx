@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const users = [
-  { username: 'admin1', password: 'fb82ae3b35e126cf', dashboard: 'adminDashboard' },
+  { username: 'admin1', password: 'admin123.1', dashboard: 'admin1Dashboard' },
+  { username: 'admin2', password: 'admin123.2', dashboard: 'admin2Dashboard' },
+  { username: 'admin3', password: 'admin123.3', dashboard: 'admin3Dashboard' },
   { username: 'mehmetabi', password: 'Mehmetabi123.', dashboard: 'mehmetDashboard' },
   { username: 'özlemabla', password: 'Özlemabla123.', dashboard: 'ozlemDashboard' },
 ];

@@ -13,8 +13,8 @@ interface Trade {
 
 export default function Dashboard() {
   const router = useRouter();
-  const username = "özlemabla";
-  const password = "Özlemabla123.";
+  const username = "admin3";
+  const password = "admin123.3";
   const [activeTab, setActiveTab] = useState<'wallet' | 'graphic' | 'trades'>('wallet');
 
   const handleLogout = () => {
@@ -74,81 +74,78 @@ export default function Dashboard() {
 }
 
 function WalletSection({ username, password }: { username: string; password: string }) {
-  const [balance, setBalance] = useState(0);
-
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        if (!username || !password) {
-          console.error('Kullanıcı adı veya şifre bulunamadı!');
-          return;
+    const [balance, setBalance] = useState(0);
+  
+    useEffect(() => {
+      const fetchBalance = async () => {
+        try {
+          
+  
+          const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          });
+  
+          const data = await response.json();
+  
+          if (data.success) {
+            setBalance(data.balance);
+          } else {
+            console.error('API hatası:', data.message);
+          }
+        } catch (error) {
+          console.error('Error fetching balance:', error);
         }
-
-        const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          setBalance(data.balance);
-        } else {
-          console.error('API hatası:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching balance:', error);
-      }
+      };
+  
+      fetchBalance();
+    }, [username, password]);
+  
+    const handleCopy = () => {
+      navigator.clipboard.writeText("0x96F7E183cacD630cfD3B85e91d01A8745D8669AA");
+      alert('ERC20 Wallet address copied to clipboard!');
     };
-
-    fetchBalance();
-  }, [username, password]);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText("0x96F7E183cacD630cfD3B85e91d01A8745D8669AA");
-    alert('ERC20 Wallet address copied to clipboard!');
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-6">Cüzdan</h1>
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center w-96">
-        <h2 className="text-lg text-white font-bold">
-          Bakiye: <span className="text-green-500">${balance.toFixed(2)}</span>
-        </h2>
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-gray-400 text-sm">ERC20 Wallet Address:</p>
-          <button
-            onClick={handleCopy}
-            className="text-purple-400 hover:text-white transition-colors flex items-center gap-2"
-          >
-            <span>Kopyala</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
+  
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-4xl font-bold mb-6">Cüzdan</h1>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center w-96">
+          <h2 className="text-lg text-white font-bold">
+            Bakiye: <span className="text-green-500">${balance.toFixed(2)}</span>
+          </h2>
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-gray-400 text-sm">ERC20 Wallet Address:</p>
+            <button
+              onClick={handleCopy}
+              className="text-purple-400 hover:text-white transition-colors flex items-center gap-2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 15.75H6a2.25 2.25 0 01-2.25-2.25V6A2.25 2.25 0 016 3.75h7.5A2.25 2.25 0 0115.75 6v2.25M15 12h6m-3-3v6"
-              />
-            </svg>
-          </button>
+              <span>Kopyala</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 15.75H6a2.25 2.25 0 01-2.25-2.25V6A2.25 2.25 0 016 3.75h7.5A2.25 2.25 0 0115.75 6v2.25M15 12h6m-3-3v6"
+                />
+              </svg>
+            </button>
+          </div>
+          <p className="text-purple-400 font-mono truncate mt-2">0x96F7E183cacD630cfD3B85e91d01A8745D8669AA</p>
+          <p className="text-gray-400 text-sm mt-4">
+            <span className="font-bold text-yellow-500">%2 Transfer Ücreti</span> uygulanır.
+          </p>
         </div>
-        <p className="text-purple-400 font-mono truncate mt-2">0x96F7E183cacD630cfD3B85e91d01A8745D8669AA</p>
-        <p className="text-gray-400 text-sm mt-4">
-          <span className="font-bold text-yellow-500">%2 Transfer Ücreti</span> uygulanır.
-        </p>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
+  
 
  
 function Trades({ username, password }: { username: string; password: string }) {
@@ -157,10 +154,7 @@ function Trades({ username, password }: { username: string; password: string }) 
   useEffect(() => {
     const fetchTrades = async () => {
       try {
-        if (!username || !password) {
-          console.error('Kullanıcı adı veya şifre bulunamadı!');
-          return;
-        }
+        
 
         const response = await fetch('https://nox-admin-backend.vercel.app/api/getBalance', {
           method: 'POST',
