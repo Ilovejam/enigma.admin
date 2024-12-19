@@ -1,17 +1,28 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
-  const searchParams = useSearchParams();
-  const username = searchParams.get('username');
-  const password = searchParams.get('password');
   const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
 
-  // Kullanıcı bilgisi yoksa login'e gönder
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('username');
+    const pass = params.get('password');
+
+    if (!user || !pass) {
+      router.push('/login');
+    } else {
+      setUsername(user);
+      setPassword(pass);
+    }
+  }, [router]);
+
   if (!username || !password) {
-    router.push('/login');
-    return null;
+    return null; // Kullanıcı bilgisi yüklenene kadar boş dön
   }
 
   return (
