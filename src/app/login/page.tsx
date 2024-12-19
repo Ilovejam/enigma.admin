@@ -30,29 +30,31 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold mb-6">Login</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="mb-4 p-2 rounded bg-gray-800 text-white"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="mb-4 p-2 rounded bg-gray-800 text-white"
-      />
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-      <button
-        onClick={handleLogin}
-        className="p-2 bg-purple-600 rounded hover:bg-purple-700"
-      >
-        Login
-      </button>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-600">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
+        <h1 className="text-4xl font-extrabold text-center text-purple-600 mb-6">Login</h1>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="mb-4 p-3 w-full rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="mb-6 p-3 w-full rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+        />
+        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+        <button
+          onClick={handleLogin}
+          className="w-full p-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition duration-200"
+        >
+          Login
+        </button>
+      </div>
     </div>
   );
 }
