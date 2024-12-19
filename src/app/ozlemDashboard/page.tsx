@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaMoneyBillWaveAlt } from 'react-icons/fa';
 import Image from 'next/image';
+interface Trade {
+  image: string;
+  coin: string;
+  current_balance: string;
+  [key: string]: any;
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -37,17 +43,7 @@ export default function Dashboard() {
               <FaWallet />
               Cüzdan
             </button>
-            <button
-              onClick={() => setActiveTab('graphic')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                activeTab === 'graphic'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              <FaChartLine />
-              Grafik
-            </button>
+            
             <button
               onClick={() => setActiveTab('trades')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
@@ -71,8 +67,7 @@ export default function Dashboard() {
       </aside>
       <main className="flex-1 p-8 min-h-screen">
         {activeTab === 'wallet' && <WalletSection username={username} password={password} />}
-        {activeTab === 'graphic' && <CryptoGraphic />}
-        {activeTab === 'trades' && <Trades username={username} password={password} />}
+         {activeTab === 'trades' && <Trades username={username} password={password} />}
       </main>
     </div>
   );
@@ -112,47 +107,7 @@ function WalletSection({ username, password }: { username: string; password: str
   );
 }
 
-function CryptoGraphic() {
-  const [coins, setCoins] = useState<Coin[]>([]);
-
-  useEffect(() => {
-    const fetchCoins = async () => {
-      try {
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc'
-        );
-        const data = await response.json();
-
-        if (response.ok) {
-          setCoins(data);
-        } else {
-          console.error('API hatası:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching coins:', error);
-      }
-    };
-
-    fetchCoins();
-  }, []);
-
-  return (
-    <div className="flex flex-col w-full">
-      <h1 className="text-4xl font-bold mb-6 text-center">Fiyatlar</h1>
-      <div>
-        {coins.map((coin) => (
-          <div key={coin.id} className="flex items-center gap-4 p-4">
-            <Image src={coin.image} alt={coin.name} width={32} height={32} />
-            <div>
-              <h2>{coin.name}</h2>
-              <p>${coin.current_price.toFixed(2)}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+ 
 function Trades({ username, password }: { username: string; password: string }) {
   const [trades, setTrades] = useState<Trade[]>([]);
 
