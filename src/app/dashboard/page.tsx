@@ -9,8 +9,8 @@ export default function Dashboard() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    const storedPassword = localStorage.getItem('password');
+    const storedUsername = sessionStorage.getItem('username');
+    const storedPassword = sessionStorage.getItem('password');
 
     if (!storedUsername || !storedPassword) {
       router.push('/login'); // Eğer bilgiler yoksa login sayfasına yönlendir
@@ -25,10 +25,14 @@ export default function Dashboard() {
       <h1>Dashboard</h1>
       <p>Username: {username}</p>
       <p>Password: {password}</p>
-      <button onClick={() => {
-        localStorage.clear(); // Çıkış yapıldığında bilgileri temizle
-        router.push('/login');
-      }}>Logout</button>
+      <button
+        onClick={() => {
+          sessionStorage.clear(); // Çıkış yapıldığında bilgileri temizle
+          router.push('/login');
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 }

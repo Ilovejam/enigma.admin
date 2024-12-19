@@ -19,10 +19,15 @@ export default function Login() {
     const user = users.find((u) => u.username === username && u.password === password);
 
     if (user) {
-      // Giriş başarılıysa, username ve password'ü localStorage'a kaydediyoruz
-      localStorage.setItem('username', username);
-      localStorage.setItem('password', password);
-      router.push('/dashboard'); // Dashboard'a yönlendir
+      // Giriş başarılıysa, username ve password'ü sessionStorage'a kaydediyoruz
+      try {
+        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('password', password);
+        router.push('/dashboard'); // Dashboard'a yönlendir
+      } catch (e) {
+        console.error("sessionStorage erişim hatası:", e);
+        setErrorMessage('Failed to save data. Try again!');
+      }
     } else {
       setErrorMessage('Invalid username or password!');
     }
@@ -31,8 +36,18 @@ export default function Login() {
   return (
     <div>
       <h1>Login</h1>
-      <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       {errorMessage && <p>{errorMessage}</p>}
       <button onClick={handleLogin}>Login</button>
     </div>
