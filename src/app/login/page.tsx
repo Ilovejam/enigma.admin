@@ -19,7 +19,7 @@ export default function Login() {
     const user = users.find((u) => u.username === username && u.password === password);
 
     if (user) {
-      // Giriş başarılıysa localStorage'a kaydediyoruz
+      // Giriş başarılıysa, username ve password'ü localStorage'a kaydediyoruz
       localStorage.setItem('username', username);
       localStorage.setItem('password', password);
       router.push('/dashboard'); // Dashboard'a yönlendir

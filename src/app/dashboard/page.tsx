@@ -26,7 +26,7 @@ export default function Dashboard() {
       <p>Username: {username}</p>
       <p>Password: {password}</p>
       <button onClick={() => {
-        localStorage.clear();
+        localStorage.clear(); // Çıkış yapıldığında bilgileri temizle
         router.push('/login');
       }}>Logout</button>
     </div>
