@@ -1,9 +1,23 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaWallet, FaChartLine, FaSignOutAlt, FaCopy, FaMoneyBillWaveAlt } from 'react-icons/fa';
-import axios from 'axios';
 import Image from 'next/image';
+
+const users = [
+  { username: 'admin1', password: 'fb82ae3b35e126cf' },
+  { username: 'mehmetabi', password: 'Mehmetabi123.' },
+  { username: 'özlemabla', password: 'Özlemabla123.' },
+];
+
+const authenticateUser = (username: string, password: string): boolean => {
+  return users.some(
+    (user) => user.username === username && user.password === password
+  );
+};
+
+
 
 interface WalletData {
   walletAddress: string;
@@ -33,26 +47,25 @@ export default function Dashboard() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem('username');
-    const savedPassword = localStorage.getItem('password');
-  
-    if (!savedUsername || !savedPassword) {
-      router.push('/login'); // Giriş yapılmamışsa login sayfasına yönlendir
+    // Kullanıcı bilgilerini sessionStorage'dan al
+    const savedUsername = sessionStorage.getItem('username');
+    const savedPassword = sessionStorage.getItem('password');
+
+    // Doğrulama kontrolü
+    if (!savedUsername || !savedPassword || !authenticateUser(savedUsername, savedPassword)) {
+      router.push('/login'); // Giriş yapılmamışsa login'e yönlendir
     } else {
       setUsername(savedUsername);
       setPassword(savedPassword);
     }
   }, [router]);
-  
-
-
-   
 
   const handleLogout = () => {
-    document.cookie = 'auth=false; path=/';
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('password');
     router.push('/login');
   };
-
+  
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       <aside className="w-64 bg-gray-800 bg-opacity-90 p-6 border-r border-gray-700 flex flex-col justify-between min-h-screen">
@@ -128,8 +141,9 @@ function WalletSection() {
     const fetchBalance = async () => {
       try {
         // localStorage'dan username ve password değerlerini al
-        const savedUsername = localStorage.getItem('username');
-        const savedPassword = localStorage.getItem('password');
+        const savedUsername = sessionStorage.getItem('username');
+      const savedPassword = sessionStorage.getItem('password');
+
   
         // Eğer username veya password yoksa, işlemi durdur
         if (!savedUsername || !savedPassword) {
@@ -317,8 +331,9 @@ function Trades() {
 
   const fetchTrades = async () => {
     try {
-      const savedUsername = localStorage.getItem('username');
-      const savedPassword = localStorage.getItem('password');
+      const savedUsername = sessionStorage.getItem('username');
+      const savedPassword = sessionStorage.getItem('password');
+
   
       if (!savedUsername || !savedPassword) {
         console.error('Kullanıcı adı veya şifre bulunamadı!');
