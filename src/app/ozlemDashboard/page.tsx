@@ -176,7 +176,7 @@ function Trades({ username, password }: { username: string; password: string }) 
                     <span className="font-bold">Satış Fiyatı:</span> ${trade.satış_fiyatı}
                   </p>
                   <p className="text-sm text-yellow-500 col-span-2">
-                    <span className="font-bold">Bakiye:</span> $511.41
+                    <span className="font-bold">Bakiye:</span> $521.41
                   </p>
                 </div>
               </div>
